@@ -1,0 +1,99 @@
+# Agente Reativo (Baseado em regras)
+# Regra 1: se oponente adjacente então jogar bomba
+# Regra 2: se houver tesouro adjacente então coletar
+# Regra 3: se houver munição adjacente então aproximar
+# Regra Padrão: mover aleatoriamente
+
+# 1- Ele para de se mover, pois ele quando estou parado no lado dele ele tenta jogar a bomba mas ele está sem.
+# 2- Criei um if para ver se ele tem bomba pra não ficar parado, se ele não tiver bomba ele voltará a andar pelo mapa.
+# 3- Coloquei embaixo da regra 1, quando ele detecta que está do lado da madeira joga a bomba e retorna denovo e verifica se tem alguma bomba do lado para que ele não se suicide.
+# 4- Coloquei pra se a bomba estiver em cima ou para baixo ele vai para os lados e vice versa.
+# 5- 
+# 6-
+
+
+import random
+
+class Agent:
+
+    def __init__(self):
+        pass
+
+    def next_move(self, game_state, player_state):
+
+        ammo = player_state.ammo
+        bombas = game_state.bombs
+        
+        # Obtém informações do sensor de posição do agente
+        ax, ay = player_state.location
+
+        # Obtém informações de sensores de posições adjacentes ao agente
+        c = game_state.entity_at((ax,ay+1)) #cima
+        d = game_state.entity_at((ax+1,ay)) #direita
+        b = game_state.entity_at((ax,ay-1)) #baixo
+        e = game_state.entity_at((ax-1,ay)) #esquerda
+
+        oponentes = game_state.opponents(player_state.id)
+        hx, hy = oponentes[0]
+        d = abs(ax - hx) + abs(ay - hy)
+
+        #ativ -5
+        if (d <4) and ammo == 0:
+            if (hx == ax+1 or hx == ax+2 or hx == ax+3):
+                return 'l'
+            if (hx == ax-1 or hx == ax-2 or hx == ax-3):
+                return 'r'
+            if (hx == ay+1 or hx == ay+2 or hx == ay+3):
+                return 'd'  
+            if (hx == ay-1 or hx == ay-2 or hx == ay-3):
+                return 'u' 
+
+
+        # Se tiver bomba perto
+        if c == 'b' or d == 'b' or b == 'b' or e == 'b':
+            if c == 'b' or b == 'b':
+                return random.choice(['l', 'r'])
+            if e == 'b' or d == 'b' :
+                return random.choice ([ 'u', 'd'])
+
+        # Regra 1: se oponente adjacente então jogar bomba
+        
+        if c == 1 or d == 1 or b == 1 or e == 1 :
+            if player_state.ammo > 0:
+                print("Estou jogando bomba")
+                return 'p'
+
+        #Se o agente estiver em cima de uma bomba ou ao lado de uma bomba, ele deve tentar sair dessa
+        #região movendo-se para uma direção aleatória.
+        if (c== 'sb' or d == 'sb'or e== 'sb' or b == 'sb' ) and ammo > 0:
+            if player_state.location in bombas:
+                return random.choice(['u','d','l','r'])
+            print ("Explodir madeira")
+            return 'p'
+
+        # Regra 2: se houver tesouro adjacente então coletar
+        if c == 't' or d == 't' or b == 't' or e == 't':
+            print("Estou coletando um tesouro")
+            if c == 't':
+                return 'u'
+            if d == 't':
+                return 'r'
+            if b == 't':
+                return 'd'
+            if e == 't':
+                return 'l'
+
+        # Regra 3: se houver munição adjacente então aproximar
+        if c == 'a' or d == 'a' or b == 'a' or e == 'a':
+            print("Estou coletando munição")
+            if c == 'a':
+                return 'u'
+            if d == 'a':
+                return 'r'
+            if b == 'a':
+                return 'd'
+            if e == 'a':
+                return 'l'
+
+        # Regra Padrão: mover aleatoriamente
+        return random.choice(['u','d','l','r'])
