@@ -1,3 +1,5 @@
+#Ricardo, Eduardo Rizzotto
+
 # Agente Reativo (Baseado em regras)
 # Regra 1: se oponente adjacente então jogar bomba
 # Regra 2: se houver tesouro adjacente então coletar
@@ -8,8 +10,8 @@
 # 2- Criei um if para ver se ele tem bomba pra não ficar parado, se ele não tiver bomba ele voltará a andar pelo mapa.
 # 3- Coloquei embaixo da regra 1, quando ele detecta que está do lado da madeira joga a bomba e retorna denovo e verifica se tem alguma bomba do lado para que ele não se suicide.
 # 4- Coloquei pra se a bomba estiver em cima ou para baixo ele vai para os lados e vice versa.
-# 5- 
-# 6-
+# 5- sim, porém se tiver algum obstáculo ele pode ficar preso.
+# 6- Essa fuga é melhor em partes, pois na que eu tinha feito ele não ficava congelando depois de correr da bomba, nesse novo ele fica congelado mas foge de mais possiveis bombas.
 
 
 import random
@@ -37,6 +39,21 @@ class Agent:
         hx, hy = oponentes[0]
         d = abs(ax - hx) + abs(ay - hy)
 
+        for bomba in game_state.bombs:
+            bx = bomba[0]
+            by = bomba[1]
+            db = abs(ax - bx) + abs(ay-by)
+
+            if db <= 3:
+                if bx > ax :
+                    return 'l'
+                if bx < ax :
+                    return 'r'
+                if by > ay :
+                    return 'd'
+                if by < ay :
+                    return 'u'
+                
         #ativ -5
         if (d <4) and ammo == 0:
             if (hx == ax+1 or hx == ax+2 or hx == ax+3):
@@ -49,12 +66,12 @@ class Agent:
                 return 'u' 
 
 
-        # Se tiver bomba perto
-        if c == 'b' or d == 'b' or b == 'b' or e == 'b':
-            if c == 'b' or b == 'b':
-                return random.choice(['l', 'r'])
-            if e == 'b' or d == 'b' :
-                return random.choice ([ 'u', 'd'])
+         # Se tiver bomba perto
+        # if c == 'b' or d == 'b' or b == 'b' or e == 'b':
+        #     if c == 'b' or b == 'b':
+        #         return random.choice(['l', 'r'])
+        #     if e == 'b' or d == 'b' :
+        #         return random.choice ([ 'u', 'd'])
 
         # Regra 1: se oponente adjacente então jogar bomba
         
